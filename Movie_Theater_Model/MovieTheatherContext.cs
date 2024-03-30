@@ -48,9 +48,10 @@ public partial class MovieTheatherContext : DbContext
 
         modelBuilder.Entity<ScreenTime>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("ScreenTime");
+            
+            entity.HasKey(e => e.ScreeningId);
+
+            entity.ToTable("ScreenTime");
 
             entity.Property(e => e.MovieId).HasColumnName("Movie_ID");
             entity.Property(e => e.ScreenTime1)
