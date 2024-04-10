@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +56,7 @@ namespace MovieTheather_API.Controllers
         // PUT: api/Theathers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutTheather(int id, Theather theather)
         {
             if (id != theather.TheatherId)
@@ -86,16 +88,18 @@ namespace MovieTheather_API.Controllers
         // POST: api/Theathers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Theather>> PostTheather(Theather theather)
         {
             _context.Theathers.Add(theather);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTheather", new { id = theather.TheatherId }, theather);
+            return Ok(theather); 
         }
 
         // DELETE: api/Theathers/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteTheather(int id)
         {
             var theather = await _context.Theathers.FindAsync(id);

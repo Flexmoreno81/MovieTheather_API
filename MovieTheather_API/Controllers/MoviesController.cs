@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Azure.Identity;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -91,7 +94,7 @@ namespace MovieTheather_API.Controllers
 
 
 
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, Movie movie)
         {
@@ -121,19 +124,29 @@ namespace MovieTheather_API.Controllers
             return NoContent();
         }
 
-        // POST: api/Movies
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+       
         [HttpPost]
-        public async Task<ActionResult<Movie>> PostMovie(Movie movie)
+        [Authorize]
+
+        
+        public async Task<ActionResult<Movie>> PostMovie(MovieDTO movie)
         {
-            _context.Movies.Add(movie);
+
+          
+            
+
+            var DTO = movie.Adapt<Movie>(); 
+            _context.Movies.Add(DTO);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetMovie", new { id = movie.MovieId }, movie);
+            return Ok(DTO); 
         }
 
-        // DELETE: api/Movies/5
+
+
+
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);

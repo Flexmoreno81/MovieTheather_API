@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -108,6 +109,7 @@ namespace MovieTheather_API.Controllers
         // PUT: api/ScreenTimes/5
       
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutScreenTime(int id, ScreenTime screenTime)
         {
             if (id != screenTime.ScreeningId)
@@ -136,9 +138,9 @@ namespace MovieTheather_API.Controllers
             return NoContent();
         }
 
-        // POST: api/ScreenTimes
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
+      
         public async Task<ActionResult<ScreenTime>> PostScreenTime(ScreenTime screenTime)
         {
             _context.ScreenTimes.Add(screenTime);
@@ -149,6 +151,7 @@ namespace MovieTheather_API.Controllers
 
         // DELETE: api/ScreenTimes/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteScreenTime(int id)
         {
             var screenTime = await _context.ScreenTimes.FindAsync(id);

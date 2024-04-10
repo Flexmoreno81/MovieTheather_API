@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Movie_Theater_Model.Models
 {
 
-    public partial class Login {
+    public partial class Logins {
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
