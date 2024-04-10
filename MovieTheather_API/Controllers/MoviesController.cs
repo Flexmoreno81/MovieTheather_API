@@ -53,8 +53,45 @@ namespace MovieTheather_API.Controllers
             return Ok((movie.Adapt<MovieDTO>()));
         }
 
-     
- 
+
+        [HttpGet("FilterByGenre/{genre}")]
+
+
+        public async Task<ActionResult<List<MovieDTO>>> FilterbyGenre(string genre) { 
+            var list_movies = await _context.Movies.Where(x=> x.Genre.ToLower() ==genre.ToLower()).ToListAsync();
+
+            if (list_movies is null) { 
+                return NotFound("Cannot find any movies with that genre");
+            }
+            
+            var DTO_LIST = list_movies.Adapt<List<MovieDTO>>();
+
+            return Ok(DTO_LIST); 
+        }
+
+
+
+
+        [HttpGet("FilterByRating/{rating}")]
+
+
+        public async Task<ActionResult<List<MovieDTO>>> FilterByRating(string rating)
+        {
+            var list_movies = await _context.Movies.Where(x => x.Rating.ToLower() == rating.ToLower()).ToListAsync();
+
+            if (list_movies is null)
+            {
+                return NotFound("Cannot find any movies with that rating");
+            }
+
+            var DTO_LIST = list_movies.Adapt<List<MovieDTO>>();
+
+            return Ok(DTO_LIST);
+        }
+
+
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, Movie movie)
         {

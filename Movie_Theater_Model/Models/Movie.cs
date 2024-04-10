@@ -12,6 +12,8 @@ public partial class Movie
     public string Director { get; set; } = null!;
 
     public string Genre { get; set; } = null!;
+    public string Rating { get; set; } = null!; 
+
 
     public int Runtime { get; set; }
 

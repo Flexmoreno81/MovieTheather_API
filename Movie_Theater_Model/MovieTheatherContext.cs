@@ -22,6 +22,8 @@ public partial class MovieTheatherContext : DbContext
 
     public virtual DbSet<Theather> Theathers { get; set; }
 
+    public virtual DbSet<Login> Login { get; set;  }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=MovieInfo;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
@@ -96,6 +98,19 @@ public partial class MovieTheatherContext : DbContext
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("zipcode");
+        });
+
+
+        modelBuilder.Entity<Login>(entity =>
+        {
+            entity.Property(e => e.loginID).HasColumnName("LoginID");
+            entity.Property(e => e.username).HasMaxLength(30)
+                .IsUnicode(false).HasColumnName("username");
+
+            entity.Property(e=>e.password).HasMaxLength(50).IsUnicode(false).HasColumnName("Password");
+            entity.Property(e => e.first_name).HasMaxLength(50).IsUnicode(false).HasColumnName("First Name");
+            entity.Property(e => e.first_name).HasMaxLength(50).IsUnicode(false).HasColumnName("Last Name");
+
         });
 
         OnModelCreatingPartial(modelBuilder);

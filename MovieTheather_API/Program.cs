@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.EntityFrameworkCore;
 using Movie_Theater_Model;
+using Movie_Theater_Model.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,13 @@ var connectionString = builder.Configuration.GetConnectionString("movie_connecti
 
 
 builder.Services.AddDbContext<MovieTheatherContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.ConstraintMap.Add("TimeOnly", typeof(TimeOnlyRouteConstraint));
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,6 +30,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting();
+
+
 
 app.UseHttpsRedirection();
 

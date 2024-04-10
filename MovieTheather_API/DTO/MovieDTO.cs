@@ -10,6 +10,8 @@
 
         public int Runtime { get; set; }
 
+        public string Rating { get; set; } = null!;
+
         public DateOnly ReleaseYear { get; set; }
     }
 }
