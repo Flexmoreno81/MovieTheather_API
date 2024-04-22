@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Movie_Theater_Model.Models;
 
+
 namespace Movie_Theater_Model;
 
-public partial class MovieTheatherContext : DbContext
+public partial class MovieTheatherContext : IdentityDbContext<UserLogins>
 {
     public MovieTheatherContext()
     {
@@ -22,7 +26,9 @@ public partial class MovieTheatherContext : DbContext
 
     public virtual DbSet<Theather> Theathers { get; set; }
 
-    public virtual DbSet<Logins> Logins { get; set;  }
+
+
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -101,17 +107,15 @@ public partial class MovieTheatherContext : DbContext
         });
 
 
-        modelBuilder.Entity<Logins>(entity =>
-        {
-            entity.Property(e => e.loginID).HasColumnName("LoginID");
-            entity.Property(e => e.username).HasMaxLength(30)
-                .IsUnicode(false).HasColumnName("username");
+        modelBuilder.Entity<IdentityUserLogin<string>>()
+            .HasKey(login => login.UserId);
 
-            entity.Property(e=>e.password).HasMaxLength(50).IsUnicode(false).HasColumnName("Password");
-            entity.Property(e => e.first_name).HasMaxLength(50).IsUnicode(false).HasColumnName("First Name");
-            entity.Property(e => e.first_name).HasMaxLength(50).IsUnicode(false).HasColumnName("Last Name");
 
-        });
+        modelBuilder.Entity<IdentityUserRole<string>>()
+        .HasKey(ur => new { ur.UserId, ur.RoleId });
+
+        modelBuilder.Entity<IdentityUserToken<string>>()
+        .HasKey(token => new { token.UserId, token.LoginProvider, token.Name });
 
         OnModelCreatingPartial(modelBuilder);
     }

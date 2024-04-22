@@ -26,23 +26,26 @@ namespace MovieTheather_API.Controllers
             _context = context;
         }
 
+        
         // GET: api/Movies
         [HttpGet]
+        
         public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
         {
-            var movie_list = await _context.Movies.ToListAsync();
+            var movieList = await _context.Movies.ToListAsync();
 
-            if (movie_list is null) {
-                return BadRequest("ERROR THERE IS NO MOVIES IN THE DATABASE"); 
+            if (movieList is null || movieList.Count == 0)
+            {
+                return NotFound("NO MOVIES FOUND IN THE DATABASE");
             }
 
-            var list_to_DTO = movie_list.Adapt<IEnumerable<MovieDTO>>(); 
+            var listToDTO = movieList.Adapt<IEnumerable<MovieDTO>>();
 
-            return Ok(list_to_DTO);
+            return Ok(listToDTO);
         }
 
-     
-     
+
+
         [HttpGet("{id}")]
         public async Task<ActionResult<MovieDTO>> GetMovie(int id)
         {
@@ -94,8 +97,9 @@ namespace MovieTheather_API.Controllers
 
 
 
-        [Authorize]
+      
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutMovie(int id, Movie movie)
         {
             if (id != movie.MovieId)
@@ -152,7 +156,7 @@ namespace MovieTheather_API.Controllers
             var movie = await _context.Movies.FindAsync(id);
             if (movie == null)
             {
-                return NotFound();
+                return NotFound("there was an error");
             }
 
             _context.Movies.Remove(movie);

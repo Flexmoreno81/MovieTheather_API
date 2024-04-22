@@ -85,8 +85,7 @@ namespace MovieTheather_API.Controllers
             return NoContent();
         }
 
-        // POST: api/Theathers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+       
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<Theather>> PostTheather(Theather theather)
@@ -97,7 +96,7 @@ namespace MovieTheather_API.Controllers
             return Ok(theather); 
         }
 
-        // DELETE: api/Theathers/5
+      
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteTheather(int id)
