@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Movie_Theater_Model.Models;
 
@@ -11,7 +13,10 @@ public partial class ScreenTime
 
     public int TheatherId { get; set; }
 
-    public TimeOnly ScreenTime1 { get; set; }
+
+    [Column(TypeName = "VARCHAR")]
+    [StringLength(50)]
+    public string ScreenTime1 { get; set; }
 
     public virtual Movie Movie { get; set; } = null!;
 

@@ -56,7 +56,7 @@ namespace MovieTheather_API.Controllers
         // PUT: api/Theathers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize]
+      
         public async Task<IActionResult> PutTheather(int id, Theather theather)
         {
             if (id != theather.TheatherId)
@@ -87,7 +87,7 @@ namespace MovieTheather_API.Controllers
 
        
         [HttpPost]
-        [Authorize]
+
         public async Task<ActionResult<Theather>> PostTheather(Theather theather)
         {
             _context.Theathers.Add(theather);
@@ -98,7 +98,7 @@ namespace MovieTheather_API.Controllers
 
       
         [HttpDelete("{id}")]
-        [Authorize]
+       
         public async Task<IActionResult> DeleteTheather(int id)
         {
             var theather = await _context.Theathers.FindAsync(id);
@@ -110,12 +110,31 @@ namespace MovieTheather_API.Controllers
             _context.Theathers.Remove(theather);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         private bool TheatherExists(int id)
         {
             return _context.Theathers.Any(e => e.TheatherId == id);
         }
+
+        [HttpGet("/BY-ZIPCODE{zipcode}")]
+
+        public async Task<ActionResult<List<TheaterDTO>>> getByZipCode(string zipcode) { 
+        
+            var theatherList = await _context.Theathers.Where(x=> x.Zipcode == zipcode).ToListAsync();
+
+            if (theatherList is null) {
+                return NotFound("Theather not found"); 
+            }
+
+
+            return Ok(theatherList); 
+
+        } 
     }
+
+
+    
+
 }

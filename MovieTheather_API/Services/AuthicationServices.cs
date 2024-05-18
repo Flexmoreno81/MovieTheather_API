@@ -43,7 +43,7 @@ namespace MovieTheather_API.Services
 
             var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
                    _configuration["Jwt:Audience"], claims,
-                   expires: DateTime.UtcNow.AddMinutes(30),
+                   expires: DateTime.UtcNow.AddMinutes(100),
                    signingCredentials: sigingcredit
                );
 

@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-var connectionString = builder.Configuration.GetConnectionString("movie_connection");
+var connectionString = builder.Configuration.GetConnectionString("production");
 
 
 builder.Services.AddDbContext<MovieTheatherContext>(options => options.UseSqlServer(connectionString));
@@ -90,6 +90,9 @@ builder.Services.Configure<RouteOptions>(options =>
 
 builder.Services.AddTransient<IAuthicationServicess, AuthicationServices>();
 
+
+
+
 var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -101,11 +104,12 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 app.UseRouting();
-app.UseCors();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapControllers();
 
 app.UseEndpoints(endpoints =>
 {
@@ -114,7 +118,9 @@ app.UseEndpoints(endpoints =>
 
 
 
-app.MapControllers();
+
+
+
 
 
 app.Run();

@@ -8,7 +8,7 @@ namespace MovieTheather_API.DTO
 
       
 
-        public TimeOnly ScreenTime1 { get; set; }
+        public string ScreenTime1 { get; set; }
 
         public virtual Movie Movie { get; set; } = null!;
 

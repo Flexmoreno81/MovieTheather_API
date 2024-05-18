@@ -2,6 +2,8 @@
 {
     public class TheaterDTO
     {
+
+        public int TheatherId { get; set; }
         public string Name { get; set; } = null!;
 
         public string State { get; set; } = null!;

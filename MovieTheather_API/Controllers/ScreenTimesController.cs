@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
+
 using Movie_Theater_Model;
 using Movie_Theater_Model.Models;
 using MovieTheather_API.DTO;
@@ -38,7 +35,7 @@ namespace MovieTheather_API.Controllers
                 return NotFound("No screentimes found.");
             }
 
-        
+
 
             var DTO_LIST = screentimesWithDetails.Adapt<IEnumerable<ScreenTimeDTO>>();
             return Ok(DTO_LIST);
@@ -51,7 +48,7 @@ namespace MovieTheather_API.Controllers
         [HttpGet("screentime/{id}")]
         public async Task<ActionResult<ScreenTimeDTO>> GetScreenTime(int id)
         {
-            var screenTime = await _context.ScreenTimes.FindAsync(id); 
+            var screenTime = await _context.ScreenTimes.FindAsync(id);
 
             if (screenTime == null)
             {
@@ -63,11 +60,11 @@ namespace MovieTheather_API.Controllers
             var theather = await _context.Theathers.FindAsync(screenTime.TheatherId);
 
             if (movie == null && theather == null) {
-                return BadRequest("Unable to locate the movies or theathers; thearfore I cannot provide screenTime"); 
+                return BadRequest("Unable to locate the movies or theathers; thearfore I cannot provide screenTime");
             }
 
             screenTime.Movie = movie;
-            screenTime.Theather = theather;  
+            screenTime.Theather = theather;
 
 
             var DTO_SCREEN = screenTime.Adapt<ScreenTimeDTO>();
@@ -85,18 +82,15 @@ namespace MovieTheather_API.Controllers
                .Include(st => st.Theather)
                .ToListAsync();
 
-            TimeSpan timeSpan = TimeSpan.Parse(time);
-
            
-            TimeOnly timeOnly = TimeOnly.FromTimeSpan(timeSpan);
 
-            var list_movies = screentimesWithDetails.Where(x => x.ScreenTime1 == timeOnly).Select(x => x.Movie).ToList();
+            var list_movies = screentimesWithDetails.Where(x => x.ScreenTime1 == time).Select(x => x.Movie).ToList();
 
             if (list_movies is null) {
                 return NotFound("Unable to find movies based on the time");
             }
 
-            var List_DTO = list_movies.Adapt<List<MovieDTO>>(); 
+            var List_DTO = list_movies.Adapt<List<MovieDTO>>();
 
             return Ok(List_DTO);
 
@@ -107,17 +101,30 @@ namespace MovieTheather_API.Controllers
 
 
         // PUT: api/ScreenTimes/5
+
+        [HttpPut("putScreen/{id}")]
       
-        [HttpPut("{id}")]
-        [Authorize]
-        public async Task<IActionResult> PutScreenTime(int id, ScreenTime screenTime)
+        public async Task<IActionResult> PutScreenTime(int id, ScreenTime screenTimeDTO)
         {
-            if (id != screenTime.ScreeningId)
+            if (id != screenTimeDTO.ScreeningId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(screenTime).State = EntityState.Modified;
+            // Retrieve the ScreenTime entity from the database
+            var screenTime = await _context.ScreenTimes.FindAsync(id);
+            if (screenTime == null)
+            {
+                return NotFound();
+            }
+
+           
+            screenTime.ScreeningId = screenTimeDTO.ScreeningId;
+            screenTime.MovieId = screenTimeDTO.MovieId;
+            screenTime.TheatherId = screenTimeDTO.TheatherId;
+            screenTime.ScreenTime1 = screenTimeDTO.ScreenTime1;
+            screenTime.Movie = screenTimeDTO.Movie;
+            screenTime.Theather = screenTimeDTO.Theather;
 
             try
             {
@@ -139,8 +146,8 @@ namespace MovieTheather_API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
       
+
         public async Task<ActionResult<ScreenTime>> PostScreenTime(ScreenTime screenTime)
         {
             _context.ScreenTimes.Add(screenTime);
@@ -170,5 +177,56 @@ namespace MovieTheather_API.Controllers
         {
             return _context.ScreenTimes.Any(e => e.ScreeningId == id);
         }
+
+
+        [HttpGet("ByMovies/{movie_id}")]
+
+        public async Task<ActionResult<List<ScreenTimeDTO>>> moviesInfo(int movie_id) {
+            Movie? movie = await _context.Movies.FindAsync(movie_id);
+
+            if (movie == null) {
+                return BadRequest("Unable to locate the movies");
+            }
+
+
+            var movie_info_list = await _context.ScreenTimes
+                .Include(st => st.Movie) // Eagerly load the Movie navigation property
+                .Include(st => st.Theather) // Eagerly load the Theather navigation property
+                 .Where(x => x.Movie == movie)
+                    .ToListAsync();
+
+
+            if (movie_info_list is null) {
+                return NotFound("Unable to display");
+            }
+
+            return Ok(movie_info_list);
+        }
+
+
+        [HttpGet("ByTheather{id}")]
+
+
+        public async Task<ActionResult<List<MovieDTO>>> MoviesByTheater(int id)
+        {
+            List<Movie> movieList = await _context.ScreenTimes
+                .Include(st => st.Movie)
+                .Where(x => x.TheatherId == id)
+                .Select(st => st.Movie) 
+                .ToListAsync();
+
+            if (movieList == null || movieList.Count == 0)
+            {
+                return NotFound("Unable to receive the data");
+            }
+
+            var movieDTOList = movieList.Adapt<List<MovieDTO>>();
+
+            return Ok(movieDTOList);
+        }
+
+
+
+
     }
 }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Azure.Identity;
+﻿
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Movie_Theater_Model;
@@ -26,10 +21,10 @@ namespace MovieTheather_API.Controllers
             _context = context;
         }
 
-        
+
         // GET: api/Movies
         [HttpGet]
-        
+
         public async Task<ActionResult<IEnumerable<MovieDTO>>> GetMovies()
         {
             var movieList = await _context.Movies.ToListAsync();
@@ -63,19 +58,71 @@ namespace MovieTheather_API.Controllers
         [HttpGet("FilterByGenre/{genre}")]
 
 
-        public async Task<ActionResult<List<MovieDTO>>> FilterbyGenre(string genre) { 
-            var list_movies = await _context.Movies.Where(x=> x.Genre.ToLower() ==genre.ToLower()).ToListAsync();
+        public async Task<ActionResult<List<MovieDTO>>> FilterbyGenre(string genre) {
 
-            if (list_movies is null) { 
+
+            if (genre.ToLower().Equals("any".ToLower())) {
+
+               var list_of_movies = await _context.Movies.ToListAsync();
+                var DTO = list_of_movies.Adapt<List<MovieDTO>>(); 
+                return Ok(DTO);
+            } 
+            
+            var list_movies = await _context.Movies.Where(x => x.Genre.ToLower() == genre.ToLower()).ToListAsync();
+
+            if (list_movies is null) {
                 return NotFound("Cannot find any movies with that genre");
             }
-            
+
+          
+
             var DTO_LIST = list_movies.Adapt<List<MovieDTO>>();
 
-            return Ok(DTO_LIST); 
+            return Ok(DTO_LIST);
         }
 
 
+        [HttpGet("RatingList")]
+
+        public async Task<ActionResult<List<string>>> getRatingList() {
+            List<string> rating_list = await _context.Movies.Select(x => x.Rating).Distinct().ToListAsync();
+
+            if (rating_list is null) {
+                return BadRequest("there is an error");
+            }
+
+            foreach (string x in rating_list) {
+
+            }
+            return Ok(rating_list);
+        }
+
+
+        [HttpGet("ListOfGenre")]
+
+        public async Task<ActionResult<List<string>>> GetgenreList() {
+            var genreList = await _context.Movies.Select(x => x.Genre).Distinct().ToListAsync();
+
+            if (genreList is null) {
+                return BadRequest("Not able to generate Gnere List");
+            }
+
+            return Ok(genreList);
+        }
+
+        [HttpGet("ListOfYears")]
+
+        public async Task<ActionResult<List<string>>> getListofYears()
+        {
+            var yearList = await _context.Movies.Select(x => x.ReleaseYear).Distinct().ToListAsync();
+
+            if (yearList is null)
+            {
+                return BadRequest("Not able to generate Gnere List");
+            }
+
+            return Ok(yearList);
+        }
 
 
         [HttpGet("FilterByRating/{rating}")]
@@ -85,7 +132,7 @@ namespace MovieTheather_API.Controllers
         {
             var list_movies = await _context.Movies.Where(x => x.Rating.ToLower() == rating.ToLower()).ToListAsync();
 
-            if (list_movies is null)
+            if (list_movies is null && list_movies.Count() <= 0)
             {
                 return NotFound("Cannot find any movies with that rating");
             }
@@ -97,9 +144,10 @@ namespace MovieTheather_API.Controllers
 
 
 
-      
+
+
         [HttpPut("{id}")]
-        [Authorize]
+     
         public async Task<IActionResult> PutMovie(int id, Movie movie)
         {
             if (id != movie.MovieId)
@@ -128,29 +176,44 @@ namespace MovieTheather_API.Controllers
             return NoContent();
         }
 
-       
-        [HttpPost]
-        [Authorize]
 
+        [HttpPost]
         
+
+
         public async Task<ActionResult<Movie>> PostMovie(MovieDTO movie)
         {
 
-          
-            
 
-            var DTO = movie.Adapt<Movie>(); 
+
+
+            var DTO = movie.Adapt<Movie>();
             _context.Movies.Add(DTO);
             await _context.SaveChangesAsync();
 
-            return Ok(DTO); 
+            return Ok(DTO);
+        }
+
+
+        [HttpGet("FilterByRealseYear/{releaseYear}")]
+        public async Task<ActionResult<List<MovieDTO>>> getRealseYears(DateOnly releaseYear)
+        {
+            List<Movie>? realseYears = await _context.Movies.Where(x => x.ReleaseYear == releaseYear).ToListAsync();
+
+            if ((realseYears is null) &&(realseYears.Count() <= 0) ) {
+                return NotFound("there no movies within that year"); 
+            }
+
+            List<MovieDTO> movies_DTO = realseYears.Adapt<List<MovieDTO>>(); 
+
+            return Ok(movies_DTO);
         }
 
 
 
 
         [HttpDelete("{id}")]
-        [Authorize]
+
         public async Task<IActionResult> DeleteMovie(int id)
         {
             var movie = await _context.Movies.FindAsync(id);
@@ -162,12 +225,15 @@ namespace MovieTheather_API.Controllers
             _context.Movies.Remove(movie);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok(); 
         }
 
         private bool MovieExists(int id)
         {
             return _context.Movies.Any(e => e.MovieId == id);
         }
+
+
+        
     }
 }

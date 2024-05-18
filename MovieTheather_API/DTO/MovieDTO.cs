@@ -1,7 +1,14 @@
-﻿namespace MovieTheather_API.DTO
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace MovieTheather_API.DTO
 {
     public class MovieDTO
     {
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int MovieId { get; set; }
         public string Title { get; set; } = null!;
 
         public string Director { get; set; } = null!;

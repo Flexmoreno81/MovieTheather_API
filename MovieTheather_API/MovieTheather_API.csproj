@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>False</InvariantGlobalization>
+	  <ErroronDuplicatePublishOutputFiles>false</ErroronDuplicatePublishOutputFiles>
   </PropertyGroup>
 
   <ItemGroup>
